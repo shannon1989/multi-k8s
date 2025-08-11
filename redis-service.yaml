@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis # voting-app通过service name (redis)来访问redis组件
+  # namespace: dev
+  labels:
+    name: redis-service
+
+spec:
+  # ClusterIP绑定一个Deployment之后，那么这个deployment就可以被Cluster其他Deployment访问
+  type: ClusterIP # ClusterIp是默认的Service类型
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    name: redis-pod # ClusterIp服务是指向Pod的

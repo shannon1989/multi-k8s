@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres-pod
+  template:
+    metadata:
+      labels:
+        name: postgres-pod
+    spec:
+      # request storage in the pod level
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: db-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          # allocate storage in the contaienr level
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+              subPath: postgres # 将postgres的数据存在postgres-storage的postgres的子文件夹里边
+          
+          # 设置POD启动之后需要的环境变量，pg user和pg password, 密码可以存在Secrets对象里边
+          # 环境变量需要是String类型
+          env:
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: POSTGRES_PASSWORD

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+# 只需创建PVC，然后让Kubernetes自己根据我们的需求创建Persistent Volume
+metadata:
+  name: db-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce #can by used by a single node
+    # ReadWriteMany # can by read and write by many node
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard # 如果是云服务，就是不同的class of storage，也就是为什么K8s用于云原生应用
